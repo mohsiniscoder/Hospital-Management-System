@@ -1,6 +1,7 @@
 #include<iostream>
 #include<windows.h>
 #include<conio.h>
+#include<cctype>
 using namespace std;
 void printHeader();
 void print_main_menu();
@@ -49,6 +50,9 @@ void add_doctors();
 void add_patients();
 bool edit_patient_details(string patient_id_to_check,string patient_cnic_to_check);
 bool valid_patient_credentials(string patient_name_to_check,string patient_cnic_to_check);
+bool cnic_validity(string patient_cnic_to_check);
+bool new_cnic_validity(string New_CNIC);
+void CNIC_Rules();
 // main ---------------------------------------------------------------------
 // ==========================================================================
  int main(){
@@ -93,8 +97,17 @@ bool valid_patient_credentials(string patient_name_to_check,string patient_cnic_
             cin>>machine_name;
             bool validity_of_name=machine_name_validation(machine_name);
             if (validity_of_name == true){
+              while(true){
               cout<<"Enter new Quantity:";
               cin>>new_quantity;
+                if (cin.fail()) {
+                cout << "Invalid Quantity." << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+            } else {
+                break;
+            }
+              }
               edit_inventory_machines(machine_name,new_quantity);
               cout<<machine_name<<" quantity "<<"Updated Successfully";
               cout<<"\nDo you want to update some other machine y/n";
@@ -117,10 +130,32 @@ bool valid_patient_credentials(string patient_name_to_check,string patient_cnic_
             if (validity_of_medicine_name == true){
               //code for editing medicine inventory
               char quantity_or_price;
-              cout<< "Enter The New Price of the medicine:";
-              cin>> new_price;
-              cout<<"Enter the new Quantity of the medicine:";
-              cin>> new_quantity;
+              while(true){
+              cout<<"Enter The New Price of the medicine:";
+              cin>>new_price;
+                if (cin.fail()) {
+                cout << "Invalid Price." << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+            } else {
+                break;
+            }
+              }
+              // cout<< "Enter The New Price of the medicine:";
+              // cin>> new_price;
+              while(true){
+                cout<< "Enter The New Quantity of the medicine:";
+                cin>> new_quantity;
+                  if (cin.fail()) {
+                  cout << "Invalid Quantity." << endl;
+                  cin.clear();
+                  cin.ignore(1000, '\n');
+              } else {
+                  break;
+              }
+              }
+              // cout<<"Enter the new Quantity of the medicine:";
+              // cin>> new_quantity;
               cout<< "Enter 'p' to change to change price \nEnter 'q' to change quantity and enter 'b' to change both: ";
               cin>> quantity_or_price;
               edit_inventory_medicines(medicine_name,new_quantity,new_price,quantity_or_price);
@@ -198,10 +233,26 @@ bool valid_patient_credentials(string patient_name_to_check,string patient_cnic_
         while(update_again !='n'){
           system("CLS");
           printHeader();
+          while(update_again !='n'){
           cout<<"Enter Patient Name whose details you want to edit:";
           cin>>patient_name_to_check;
-          cout<<"Enter CNIC Number of"<<patient_name_to_check<<" :";
-          cin>>patient_cnic_to_check;
+          int error_count = 0;
+              while(true){          
+                cout<<"Enter CNIC Number of "<<patient_name_to_check<<" :";
+                cin>>patient_cnic_to_check;
+                bool check = cnic_validity(patient_cnic_to_check);
+                // for (int idx )
+                  if (check == true) {
+                      break;
+                  }
+                  else if(error_count == 2 || error_count == 4) {
+                    cout<<"Sir You Have entered Invalid CNIC Multiple Times, Plz Be carefull next time"<<endl;
+                  }
+                  else {
+                      cout<<"Invalid CNIC Sir"<<endl;
+                  }
+                  error_count++;
+            }
           bool validity_of_patient_details = edit_patient_details(patient_name_to_check,patient_cnic_to_check);
           if(validity_of_patient_details == true  ){
             cout<<patient_name_to_check<<" data updated successfully\n";
@@ -212,10 +263,11 @@ bool valid_patient_credentials(string patient_name_to_check,string patient_cnic_
             }
           }
           else if(validity_of_patient_details == false){
-            cout<<"You have entered incorrect Patient Name or Password\nPress any key to continue....";
+            cout<<"You have entered incorrect Patient Name or CNIC\nPress any key to continue....";
             getch();
             continue;
           }
+      }
       }
       }
       else if(admin_option == '6'){
@@ -457,7 +509,6 @@ void add_doctors(){
   string doc_password;
   cin>>doc_password;
   for (int idx = doctor_count;idx <= doctor_count;idx++){
-    if (doctor_count < size){
     doctors_name[idx]=doc_name;
     doctors_speciality[idx] = doc_speciality;
     doctor_id[idx] = doc_id;
@@ -465,9 +516,12 @@ void add_doctors(){
     doctor_number[idx] = doc_name;
     doctor_fee[idx] = doc_fee;
     doctor_password[idx] = doc_password;
-    doctor_count++;
+    if(doctor_count > size){
+      cout<<"Storage Size Full!!!!";
+      break;
+    }
   }
-  }
+  doctor_count++;
 }
 void add_patients(){
   string pat_name;
@@ -502,21 +556,68 @@ void add_patients(){
 bool edit_patient_details(string patient_name_to_check,string patient_cnic_to_check){
   for(int idx =0;idx < patient_count ;idx++){ 
     if((patient_cnic[idx] == patient_cnic_to_check) && ( patient_name[idx] == patient_name_to_check)){
-      cout<<"Enter New CNIC Number";
-      string New_CNIC;
-      cin>>New_CNIC;
-      cout<<"Enter New Phone Number:";
-      string phone_number;
-      cin>>phone_number;
-      patient_phone_number[idx] = phone_number;
-      cout<<"Enter Disease of the Patient:";
-      string disease_of_patient;
-      cin>>disease_of_patient;
-      patient_diseases[idx] = disease_of_patient;
-      patient_cnic[idx] = New_CNIC;
-      return true;
-    }
-  }
+      while(true){
+        while(true){
+          system("CLS");
+          printHeader();
+          cout<<"Enter New CNIC Number:";
+          string New_CNIC;
+          cin>>New_CNIC;
+          bool check_cnic_validity = new_cnic_validity(New_CNIC);
+          if (check_cnic_validity == true){
+            patient_cnic[idx] = New_CNIC;
+            break;
+          }
+          else {
+            cout<<"Invalid CNIC Number or Wrong Syntax"<<endl;
+          }
+        }
+        getch();
+          cout<<"Enter New Phone Number:";
+          string phone_number;
+          cin>>phone_number;
+          patient_phone_number[idx] = phone_number;
+          cout<<"Enter Disease of the Patient:";
+          string disease_of_patient;
+          cin>>disease_of_patient;
+          patient_diseases[idx] = disease_of_patient;
+          return true;
+        }
+      }
   return false;
 }
-  
+}
+bool cnic_validity(string patient_cnic_to_check){
+  bool cnic_flag = false;
+  for (int idx = 0; idx<(patient_cnic_to_check.length());idx++){
+    if(isdigit(patient_cnic_to_check[idx])){
+      cnic_flag = true;
+    }
+  }
+ return cnic_flag;  
+}
+bool new_cnic_validity(string New_CNIC){
+    bool cnic_flag = false;
+    int counter_for_cnic = 0;
+  for (int idx = 0; idx<(New_CNIC.length());idx++){
+    counter_for_cnic++;
+    if( counter_for_cnic == 5 || counter_for_cnic == 13 ){
+      if( New_CNIC[counter_for_cnic] == ' ' || New_CNIC[counter_for_cnic] == '-'){
+        
+      }
+    }
+    if(counter_for_cnic != 5 || counter_for_cnic != 13){  
+    if(isdigit(New_CNIC[idx]) == true ){
+      cnic_flag = true;
+    }
+    }
+  }
+ return cnic_flag;
+}
+void CNIC_Rules(){
+  cout<<"There some Rules To Enter The CNIC Numbers"<<endl;
+  cout<<"CNIC Number is 13 charactors Long"<<endl;
+  cout<<"CNIC Number must be written in correct format.i.e XXXXX-XXXXXXX-X"<<endl;
+  cout<<"Here X represents The Number and - represents space"<<endl;
+  for_clearing_screen();
+}
