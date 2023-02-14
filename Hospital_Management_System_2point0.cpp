@@ -1,4 +1,4 @@
-#include<iostream> // If you are seeing This than you are Amazing :)
+#include<iostream>
 #include<windows.h>
 #include<conio.h>
 #include<cctype>
@@ -465,13 +465,14 @@ void add_inventory_medicines(){
   }
 }
 void print_patient_details(){
-  for (int idx = 0 ;idx< patient_count ; idx++){
+  for (int idx = 0 ;idx < patient_count ; idx++){
     cout<<"-----------------------------------------------------------------------"<<endl;
     cout<<"Name:"<<patient_name[idx]<<endl;
     cout<<"Age:"<<patient_age[idx]<<endl;
     cout<<"Blood Group:"<<patient_blood_group[idx]<<endl;
     cout<<"Diseases:"<<patient_diseases[idx]<<endl;
     cout<<"Phone Number:"<<patient_phone_number[idx]<<endl;
+    cout<<"CNIC:"<<patient_cnic[idx];
     cout<<"-----------------------------------------------------------------------"<<endl;
   }
 }
@@ -560,19 +561,23 @@ bool edit_patient_details(string patient_name_to_check,string patient_cnic_to_ch
         while(true){
           system("CLS");
           printHeader();
+          void CNIC_Rules();
           cout<<"Enter New CNIC Number:";
           string New_CNIC;
           cin>>New_CNIC;
-          bool check_cnic_validity = new_cnic_validity(New_CNIC);
-          if (check_cnic_validity == true){
-            patient_cnic[idx] = New_CNIC;
+          bool check_new_cnic_validity = new_cnic_validity(New_CNIC);
+          if (check_new_cnic_validity == true){
+            patient_cnic[patient_count] = New_CNIC;
+            patient_count++;
             break;
           }
           else {
             cout<<"Invalid CNIC Number or Wrong Syntax"<<endl;
           }
         }
+        cout<<"Press Any Key to Continue.........";
         getch();
+
           cout<<"Enter New Phone Number:";
           string phone_number;
           cin>>phone_number;
@@ -583,7 +588,7 @@ bool edit_patient_details(string patient_name_to_check,string patient_cnic_to_ch
           patient_diseases[idx] = disease_of_patient;
           return true;
         }
-      }
+    }
   return false;
 }
 }
@@ -603,7 +608,7 @@ bool new_cnic_validity(string New_CNIC){
     counter_for_cnic++;
     if( counter_for_cnic == 5 || counter_for_cnic == 13 ){
       if( New_CNIC[counter_for_cnic] == ' ' || New_CNIC[counter_for_cnic] == '-'){
-        
+        cnic_flag = true;
       }
     }
     if(counter_for_cnic != 5 || counter_for_cnic != 13){  
